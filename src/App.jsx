@@ -426,16 +426,16 @@ function LoginPage({ onLogin }) {
         <div className="bg-[#2b2a26] p-10 lg:p-14 text-[#faf7f0] flex flex-col justify-between min-h-[420px] relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-16">
-              <div className="w-10 h-10 bg-[#c8893f] flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#7a9b76] flex items-center justify-center">
                 <Sprout className="w-5 h-5 text-[#2b2a26]" strokeWidth={1.5} />
               </div>
               <div>
-                <div className="text-[10px] tracking-[0.25em] text-[#c8893f] font-semibold uppercase">Trace by Miraterra</div>
-                <div className="text-xl font-serif leading-none mt-0.5">Advisor<span className="text-[#c8893f]">.</span></div>
+                <div className="text-[10px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase">Trace by Miraterra</div>
+                <div className="text-xl font-serif leading-none mt-0.5">Advisor<span className="text-[#7a9b76]">.</span></div>
               </div>
             </div>
             <h1 className="font-serif text-[40px] leading-[1] tracking-tight mb-4">
-              The decision layer<br />for <em className="text-[#c8893f] not-italic" style={{ fontStyle: 'italic' }}>serious</em><br />agronomists.
+              The decision layer<br />for <em className="text-[#7a9b76] not-italic" style={{ fontStyle: 'italic' }}>serious</em><br />agronomists.
             </h1>
             <p className="text-[13px] text-[#e8e3d8] leading-relaxed max-w-sm mt-6">
               Manage your entire book of grower accounts. Turn TraceCOMPLETE data into revenue. Close the loop with the people who matter.
@@ -521,11 +521,239 @@ function LoginPage({ onLogin }) {
 }
 
 // =====================================================================
+// NOTIFICATION PANEL
+// =====================================================================
+
+function NotificationPanel({ onClose }) {
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+
+  const markAllRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  };
+
+  const getIcon = (type) => {
+    if (type === 'signed') return <CheckCircle2 className="w-4 h-4 text-[#5a7555]" strokeWidth={1.5} />;
+    if (type === 'alert') return <AlertTriangle className="w-4 h-4 text-[#b8442f]" strokeWidth={1.5} />;
+    if (type === 'portfolio') return <TrendingUp className="w-4 h-4 text-[#7a9b76]" strokeWidth={1.5} />;
+    if (type === 'reminder') return <Bell className="w-4 h-4 text-[#8a8560]" strokeWidth={1.5} />;
+    return <FileText className="w-4 h-4 text-[#6b6758]" strokeWidth={1.5} />;
+  };
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  return (
+    <div className="fixed inset-0 z-40" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/20" />
+      <div
+        className="absolute top-16 right-8 w-[420px] max-w-[calc(100vw-32px)] bg-white border border-[#2b2a26] shadow-2xl max-h-[70vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-4 border-b border-[#e8e3d8] flex items-center justify-between bg-[#2b2a26] text-[#faf7f0]">
+          <div>
+            <div className="text-[10px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase">
+              Notifications
+            </div>
+            <div className="text-[13px] mt-0.5">{unreadCount} unread</div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={markAllRead}
+              className="text-[10px] tracking-[0.15em] uppercase text-[#7a9b76] hover:text-[#faf7f0] transition-colors"
+            >
+              Mark all read
+            </button>
+            <button onClick={onClose} className="text-[#7a9b76] hover:text-[#faf7f0] transition-colors">
+              <X className="w-4 h-4" strokeWidth={1.5} />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-y-auto flex-1">
+          {notifications.map((n) => (
+            <div
+              key={n.id}
+              className={`p-4 border-b border-[#e8e3d8] last:border-b-0 hover:bg-[#f5f1e8] transition-colors cursor-pointer ${n.unread ? 'bg-white' : 'bg-[#faf7f0]'}`}
+            >
+              <div className="flex gap-3">
+                <div className="shrink-0 mt-0.5">{getIcon(n.type)}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className={`text-[13px] leading-snug tracking-tight ${n.unread ? 'text-[#2b2a26] font-semibold' : 'text-[#4a4840]'}`}>
+                      {n.title}
+                    </div>
+                    {n.unread && (
+                      <div className="w-2 h-2 rounded-full bg-[#7a9b76] shrink-0 mt-1.5" />
+                    )}
+                  </div>
+                  <div className="text-[12px] text-[#6b6758] leading-relaxed mb-1.5">{n.body}</div>
+                  <div className="text-[10px] text-[#8a8560] font-mono tracking-wide">{n.time}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-3 border-t border-[#e8e3d8] bg-[#f5f1e8] text-center">
+          <button className="text-[10px] tracking-[0.15em] uppercase font-semibold text-[#2b2a26] hover:text-[#7a9b76] transition-colors">
+            View all activity
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =====================================================================
+// AI SEARCH MODAL
+// =====================================================================
+
+function AISearchModal({ onClose, onNavigateToField }) {
+  const [query, setQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const [result, setResult] = useState(null);
+  const [isThinking, setIsThinking] = useState(false);
+
+  const handleSubmit = (q) => {
+    const actualQuery = q || query;
+    if (!actualQuery.trim()) return;
+    setSubmittedQuery(actualQuery);
+    setQuery(actualQuery);
+    setIsThinking(true);
+    setResult(null);
+    setTimeout(() => {
+      setResult(generateAISearchResult(actualQuery));
+      setIsThinking(false);
+    }, 800);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-start justify-center pt-24 px-4 overflow-y-auto" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-[720px] border border-[#2b2a26] shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header / Input */}
+        <div className="p-5 border-b border-[#e8e3d8] bg-[#2b2a26] text-[#faf7f0]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#7a9b76] animate-pulse" />
+            <div className="text-[10px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase">
+              TraceAdvisor AI · Ask anything
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Search className="w-5 h-5 text-[#7a9b76] shrink-0" strokeWidth={1.5} />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              placeholder="Ask about your portfolio, fields, growers..."
+              autoFocus
+              className="flex-1 bg-transparent border-none focus:outline-none text-[18px] font-serif placeholder:text-[#8a8560] text-[#faf7f0] py-2"
+            />
+            <button
+              onClick={onClose}
+              className="text-[#7a9b76] hover:text-[#faf7f0] transition-colors shrink-0"
+            >
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="max-h-[60vh] overflow-y-auto">
+          {!submittedQuery && !isThinking && (
+            <div className="p-6">
+              <div className="text-[10px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase mb-3">
+                Suggested queries
+              </div>
+              <div className="space-y-2">
+                {AI_SEARCH_SUGGESTIONS.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSubmit(s)}
+                    className="w-full text-left bg-[#f5f1e8] hover:bg-[#e8e3d8] border border-[#e8e3d8] hover:border-[#2b2a26] p-3 transition-colors text-[13px] text-[#2b2a26] flex items-center justify-between group"
+                  >
+                    <span>{s}</span>
+                    <ArrowRight className="w-3 h-3 text-[#6b6758] group-hover:text-[#2b2a26] transition-colors" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isThinking && (
+            <div className="p-10 flex items-center justify-center gap-3 text-[#6b6758]">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-[11px] tracking-[0.2em] uppercase">Thinking across your portfolio</span>
+            </div>
+          )}
+
+          {result && !isThinking && (
+            <div className="p-6">
+              <div className="text-[10px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase mb-2">
+                Answer
+              </div>
+              <p className="text-[14px] text-[#2b2a26] leading-relaxed mb-5 font-serif">
+                {result.answer}
+              </p>
+
+              {result.sources && result.sources.length > 0 && (
+                <div className="mb-5 pt-4 border-t border-[#e8e3d8]">
+                  <div className="text-[9px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase mb-2">
+                    Referenced
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {result.sources.map((s, i) => (
+                      <span key={i} className="inline-block bg-[#f5f1e8] border border-[#e8e3d8] px-2.5 py-1 text-[11px] text-[#2b2a26]">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {result.suggestions && result.suggestions.length > 0 && (
+                <div className="pt-4 border-t border-[#e8e3d8]">
+                  <div className="text-[9px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase mb-2">
+                    Suggested next
+                  </div>
+                  <div className="space-y-1.5">
+                    {result.suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleSubmit(s)}
+                        className="block w-full text-left text-[12px] text-[#7a9b76] hover:text-[#2b2a26] hover:underline transition-colors"
+                      >
+                        → {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="px-5 py-3 border-t border-[#e8e3d8] bg-[#f5f1e8] text-center">
+          <div className="text-[10px] text-[#6b6758] tracking-wide">
+            AI search is based on your portfolio data · responses may be incomplete
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =====================================================================
 // TOP NAV
 // =====================================================================
 
 function TopNav({ user, currentView, onNavigate, onLogout }) {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
+
   return (
+    <>
     <header className="border-b border-[#2b2a26] bg-[#faf7f0] sticky top-0 z-30">
       <div className="max-w-[1440px] mx-auto px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-10">
@@ -535,25 +763,25 @@ function TopNav({ user, currentView, onNavigate, onLogout }) {
             </div>
             <div className="text-left">
               <div className="text-[10px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase">Trace by Miraterra</div>
-              <div className="text-lg font-serif text-[#2b2a26] leading-none mt-0.5">Advisor<span className="text-[#c8893f]">.</span></div>
+              <div className="text-lg font-serif text-[#2b2a26] leading-none mt-0.5">Advisor<span className="text-[#7a9b76]">.</span></div>
             </div>
           </button>
           <nav className="hidden md:flex items-center gap-7 text-[11px] tracking-[0.15em] uppercase">
             <button
               onClick={() => onNavigate('portfolio')}
-              className={`transition-colors font-semibold ${currentView === 'portfolio' ? 'text-[#2b2a26] border-b-2 border-[#c8893f] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
+              className={`transition-colors font-semibold ${currentView === 'portfolio' ? 'text-[#2b2a26] border-b-2 border-[#7a9b76] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
             >
               Portfolio
             </button>
             <button
               onClick={() => onNavigate('growers')}
-              className={`transition-colors font-semibold ${currentView === 'growers' ? 'text-[#2b2a26] border-b-2 border-[#c8893f] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
+              className={`transition-colors font-semibold ${currentView === 'growers' ? 'text-[#2b2a26] border-b-2 border-[#7a9b76] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
             >
               Growers
             </button>
             <button
               onClick={() => onNavigate('library')}
-              className={`transition-colors font-semibold ${currentView === 'library' ? 'text-[#2b2a26] border-b-2 border-[#c8893f] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
+              className={`transition-colors font-semibold ${currentView === 'library' ? 'text-[#2b2a26] border-b-2 border-[#7a9b76] pb-5 -mb-5' : 'text-[#6b6758] hover:text-[#2b2a26]'}`}
             >
               Library
             </button>
@@ -561,14 +789,24 @@ function TopNav({ user, currentView, onNavigate, onLogout }) {
         </div>
 
         <div className="flex items-center gap-5">
-          <button className="text-[#6b6758] hover:text-[#2b2a26] transition-colors"><Search className="w-4 h-4" strokeWidth={1.5} /></button>
-          <button className="text-[#6b6758] hover:text-[#2b2a26] transition-colors relative">
+          <button
+            onClick={() => setShowSearch(true)}
+            className="text-[#6b6758] hover:text-[#2b2a26] transition-colors"
+            title="AI search"
+          >
+            <Search className="w-4 h-4" strokeWidth={1.5} />
+          </button>
+          <button
+            onClick={() => { setShowNotifications(true); setHasUnread(false); }}
+            className="text-[#6b6758] hover:text-[#2b2a26] transition-colors relative"
+            title="Notifications"
+          >
             <Bell className="w-4 h-4" strokeWidth={1.5} />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#b8442f] rounded-full" />
+            {hasUnread && <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#b8442f] rounded-full" />}
           </button>
           <div className="h-6 w-px bg-[#e8e3d8]" />
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#c8893f] text-white flex items-center justify-center text-[11px] font-semibold font-mono">
+            <div className="w-8 h-8 bg-[#7a9b76] text-white flex items-center justify-center text-[11px] font-semibold font-mono">
               {user.firstName[0]}{user.lastName[0]}
             </div>
             <div className="hidden lg:block">
@@ -582,6 +820,9 @@ function TopNav({ user, currentView, onNavigate, onLogout }) {
         </div>
       </div>
     </header>
+    {showNotifications && <NotificationPanel onClose={() => setShowNotifications(false)} />}
+    {showSearch && <AISearchModal onClose={() => setShowSearch(false)} />}
+    </>
   );
 }
 
@@ -613,7 +854,7 @@ function PortfolioView({ user, onSelectField, onSelectGrower }) {
           Portfolio · Spring 2026
         </div>
         <h1 className="font-serif text-[44px] md:text-[56px] leading-[0.95] text-[#2b2a26] tracking-tight mb-4">
-          Hello, <em className="text-[#c8893f] not-italic" style={{ fontStyle: 'italic' }}>{user.firstName}</em>.
+          Hello, <em className="text-[#7a9b76] not-italic" style={{ fontStyle: 'italic' }}>{user.firstName}</em>.
         </h1>
         <p className="text-[15px] text-[#4a4840] leading-relaxed max-w-2xl">
           {triageQueue.length} fields across {new Set(triageQueue.map(f => f.growerId)).size} growers need your attention this week.
@@ -649,10 +890,10 @@ function PortfolioView({ user, onSelectField, onSelectGrower }) {
         </div>
         <div className="p-5 border-t md:border-t-0 bg-[#2b2a26] text-[#faf7f0]">
           <div className="flex items-center gap-1.5 mb-2">
-            <TrendingUp className="w-3 h-3 text-[#c8893f]" strokeWidth={1.5} />
-            <span className="text-[9px] tracking-[0.15em] text-[#c8893f] font-semibold uppercase">Portfolio uplift</span>
+            <TrendingUp className="w-3 h-3 text-[#7a9b76]" strokeWidth={1.5} />
+            <span className="text-[9px] tracking-[0.15em] text-[#7a9b76] font-semibold uppercase">Portfolio uplift</span>
           </div>
-          <div className="font-mono text-2xl tabular-nums text-[#c8893f] font-medium">
+          <div className="font-mono text-2xl tabular-nums text-[#7a9b76] font-medium">
             ${(metrics.totalUplift / 1000).toFixed(0)}K
           </div>
           <div className="text-[10px] text-[#e8e3d8] mt-0.5">total opportunity</div>
@@ -752,7 +993,7 @@ function PortfolioView({ user, onSelectField, onSelectGrower }) {
                   <span className="text-[10px] text-[#6b6758] tracking-wide">
                     Peak: {f.maxPct}th pct
                   </span>
-                  <span className="text-[10px] text-[#2b2a26] font-semibold tracking-[0.15em] uppercase group-hover:text-[#c8893f] transition-colors flex items-center gap-1">
+                  <span className="text-[10px] text-[#2b2a26] font-semibold tracking-[0.15em] uppercase group-hover:text-[#7a9b76] transition-colors flex items-center gap-1">
                     Review <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
@@ -778,7 +1019,7 @@ const HistoricalPathogenBar = ({ pathogen, selectedYear }) => {
 
   const getColor = () => {
     if (pct >= 70) return 'bg-[#b8442f]';
-    if (pct >= 50) return 'bg-[#c8893f]';
+    if (pct >= 50) return 'bg-[#7a9b76]';
     if (pct >= 30) return 'bg-[#8a8560]';
     return 'bg-[#5a7555]';
   };
@@ -813,7 +1054,7 @@ const HistoricalPathogenBar = ({ pathogen, selectedYear }) => {
         ))}
       </div>
       <div className="flex justify-between items-center mt-1">
-        <span className={`text-[9px] font-semibold tracking-[0.1em] ${pct >= 70 ? 'text-[#b8442f]' : pct >= 50 ? 'text-[#c8893f]' : 'text-[#6b6758]'}`}>
+        <span className={`text-[9px] font-semibold tracking-[0.1em] ${pct >= 70 ? 'text-[#b8442f]' : pct >= 50 ? 'text-[#7a9b76]' : 'text-[#6b6758]'}`}>
           {getLabel()}
         </span>
         <span className="text-[9px] text-[#6b6758] tracking-wide">
@@ -827,7 +1068,7 @@ const HistoricalPathogenBar = ({ pathogen, selectedYear }) => {
 const ChemistryTile = ({ label, value, unit, status }) => {
   const getStatusColor = () => {
     if (status === 'deficient') return 'text-[#b8442f]';
-    if (status === 'low') return 'text-[#c8893f]';
+    if (status === 'low') return 'text-[#7a9b76]';
     if (status === 'optimal') return 'text-[#5a7555]';
     return 'text-[#2b2a26]';
   };
@@ -845,7 +1086,7 @@ const ChemistryTile = ({ label, value, unit, status }) => {
 const RecommendationCard = ({ rec, selected, onToggleSelect, onShowResources }) => {
   const priorityStyles = {
     critical: { bg: 'bg-[#b8442f]', text: 'text-white', label: 'CRITICAL' },
-    high: { bg: 'bg-[#c8893f]', text: 'text-white', label: 'HIGH' },
+    high: { bg: 'bg-[#7a9b76]', text: 'text-white', label: 'HIGH' },
     medium: { bg: 'bg-[#8a8560]', text: 'text-white', label: 'MEDIUM' },
     monitor: { bg: 'bg-[#2b2a26]', text: 'text-[#f5f1e8]', label: 'MONITOR' },
     low: { bg: 'bg-[#5a7555]', text: 'text-white', label: 'ROUTINE' },
@@ -853,7 +1094,7 @@ const RecommendationCard = ({ rec, selected, onToggleSelect, onShowResources }) 
   const style = priorityStyles[rec.priority] || priorityStyles.medium;
 
   return (
-    <div className={`bg-white border transition-all duration-200 ${selected ? 'border-[#c8893f] border-2 shadow-[0_0_0_2px_rgba(200,137,63,0.1)]' : 'border-[#e8e3d8] hover:border-[#2b2a26]'}`}>
+    <div className={`bg-white border transition-all duration-200 ${selected ? 'border-[#7a9b76] border-2 shadow-[0_0_0_2px_rgba(200,137,63,0.1)]' : 'border-[#e8e3d8] hover:border-[#2b2a26]'}`}>
       <div className="flex items-stretch">
         <div className={`${style.bg} ${style.text} px-3 py-4 flex items-center`}>
           <span className="text-[9px] font-bold tracking-[0.2em]" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
@@ -892,7 +1133,7 @@ const RecommendationCard = ({ rec, selected, onToggleSelect, onShowResources }) 
             <div className="flex items-center gap-3 text-[10px] text-[#6b6758] tracking-wide">
               <span className="font-mono">{rec.citedProduct}</span>
               <span className="flex items-center gap-1">
-                <span className={`inline-block w-1.5 h-1.5 rounded-full ${rec.confidence === 'high' ? 'bg-[#5a7555]' : 'bg-[#c8893f]'}`} />
+                <span className={`inline-block w-1.5 h-1.5 rounded-full ${rec.confidence === 'high' ? 'bg-[#5a7555]' : 'bg-[#7a9b76]'}`} />
                 {rec.confidence === 'high' ? 'High conf.' : 'Medium conf.'}
               </span>
             </div>
@@ -908,7 +1149,7 @@ const RecommendationCard = ({ rec, selected, onToggleSelect, onShowResources }) 
                 onClick={() => onToggleSelect(rec.id)}
                 className={`flex items-center gap-1.5 text-[10px] tracking-[0.1em] uppercase font-semibold px-3 py-1 transition-colors ${
                   selected
-                    ? 'bg-[#c8893f] text-white border border-[#c8893f]'
+                    ? 'bg-[#7a9b76] text-white border border-[#7a9b76]'
                     : 'bg-white text-[#2b2a26] border border-[#2b2a26] hover:bg-[#2b2a26] hover:text-white'
                 }`}
               >
@@ -959,7 +1200,7 @@ function ResourcesPanel({ rec, onClose }) {
               >
                 <div className="flex items-start justify-between gap-3 mb-1">
                   <div className="font-serif text-[15px] text-[#2b2a26] tracking-tight leading-tight">{r.title}</div>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#6b6758] group-hover:text-[#c8893f] shrink-0 mt-1" strokeWidth={1.5} />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#6b6758] group-hover:text-[#7a9b76] shrink-0 mt-1" strokeWidth={1.5} />
                 </div>
                 <div className="text-[10px] tracking-[0.15em] text-[#6b6758] font-semibold uppercase">{r.source}</div>
               </a>
@@ -1155,10 +1396,10 @@ function GrowerOnePagerModal({ field, grower, user, selectedRecs, onClose }) {
         {/* Header */}
         <div className="sticky top-0 bg-[#2b2a26] text-[#faf7f0] p-5 flex items-center justify-between z-10">
           <div>
-            <div className="text-[10px] tracking-[0.25em] text-[#c8893f] font-semibold uppercase mb-1">Grower 1-Pager · Preview</div>
+            <div className="text-[10px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase mb-1">Grower 1-Pager · Preview</div>
             <h2 className="font-serif text-[20px] tracking-tight">To {grower.name}</h2>
           </div>
-          <button onClick={onClose} className="text-[#c8893f] hover:text-[#faf7f0] transition-colors">
+          <button onClick={onClose} className="text-[#7a9b76] hover:text-[#faf7f0] transition-colors">
             <X className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
@@ -1168,13 +1409,13 @@ function GrowerOnePagerModal({ field, grower, user, selectedRecs, onClose }) {
           <div className="bg-white border border-[#e8e3d8] shadow-sm">
             {/* PDF preview header */}
             <div className="bg-[#2b2a26] text-[#faf7f0] p-6">
-              <div className="text-[9px] tracking-[0.25em] text-[#c8893f] font-semibold uppercase mb-2">
+              <div className="text-[9px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase mb-2">
                 Trace by Miraterra · Advisor
               </div>
               <div className="flex items-end justify-between">
                 <h1 className="font-serif text-[28px] italic tracking-tight">Your 2026 Field Plan</h1>
                 <div className="text-right">
-                  <div className="text-[10px] text-[#c8893f] tracking-wide">{grower.name}</div>
+                  <div className="text-[10px] text-[#7a9b76] tracking-wide">{grower.name}</div>
                   <div className="text-[10px] text-[#e8e3d8] tracking-wide">{field.name} · {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
                 </div>
               </div>
@@ -1183,7 +1424,7 @@ function GrowerOnePagerModal({ field, grower, user, selectedRecs, onClose }) {
             <div className="p-8">
               {/* Opportunity */}
               {totalUplift > 0 && (
-                <div className="bg-[#f5f1e8] border-l-2 border-[#c8893f] p-5 mb-8">
+                <div className="bg-[#f5f1e8] border-l-2 border-[#7a9b76] p-5 mb-8">
                   <div className="text-[9px] tracking-[0.25em] text-[#6b6758] font-semibold uppercase mb-2">Your 2026 Opportunity</div>
                   <div className="flex items-baseline gap-4">
                     <span className="font-serif text-[40px] text-[#2b2a26] tracking-tight">${totalUplift.toLocaleString()}</span>
@@ -1214,7 +1455,7 @@ function GrowerOnePagerModal({ field, grower, user, selectedRecs, onClose }) {
                 <div className="space-y-5">
                   {selectedRecs.map((rec, i) => (
                     <div key={rec.id} className="flex gap-4">
-                      <div className="font-serif italic text-[28px] text-[#c8893f] shrink-0 leading-none w-8">{i + 1}</div>
+                      <div className="font-serif italic text-[28px] text-[#7a9b76] shrink-0 leading-none w-8">{i + 1}</div>
                       <div className="flex-1">
                         <div className="font-serif text-[17px] text-[#2b2a26] tracking-tight mb-1">{rec.title}</div>
                         <div className="text-[12px] text-[#6b6758] leading-relaxed mb-1">{rec.action}</div>
@@ -1239,7 +1480,7 @@ function GrowerOnePagerModal({ field, grower, user, selectedRecs, onClose }) {
                   type="text"
                   value={signature}
                   onChange={(e) => setSignature(e.target.value)}
-                  className="w-full bg-[#fdfbf6] border-b-2 border-[#2b2a26] focus:outline-none focus:border-[#c8893f] font-serif italic text-[24px] text-[#2b2a26] py-2 mb-2"
+                  className="w-full bg-[#fdfbf6] border-b-2 border-[#2b2a26] focus:outline-none focus:border-[#7a9b76] font-serif italic text-[24px] text-[#2b2a26] py-2 mb-2"
                   style={{ fontStyle: 'italic' }}
                 />
                 <div className="text-[11px] text-[#6b6758]">{user.firstName} {user.lastName}, {user.credential}</div>
@@ -1292,10 +1533,10 @@ function TextToGrowerModal({ field, grower, user, selectedRecs, onClose }) {
       <div className="bg-white w-full max-w-[520px] border border-[#2b2a26]" onClick={(e) => e.stopPropagation()}>
         <div className="bg-[#2b2a26] text-[#faf7f0] p-5 flex items-center justify-between">
           <div>
-            <div className="text-[10px] tracking-[0.25em] text-[#c8893f] font-semibold uppercase mb-1">Text Message</div>
+            <div className="text-[10px] tracking-[0.25em] text-[#7a9b76] font-semibold uppercase mb-1">Text Message</div>
             <h2 className="font-serif text-[18px] tracking-tight">To {grower.owner}</h2>
           </div>
-          <button onClick={onClose} className="text-[#c8893f] hover:text-[#faf7f0] transition-colors">
+          <button onClick={onClose} className="text-[#7a9b76] hover:text-[#faf7f0] transition-colors">
             <X className="w-5 h-5" strokeWidth={1.5} />
           </button>
         </div>
@@ -1304,7 +1545,7 @@ function TextToGrowerModal({ field, grower, user, selectedRecs, onClose }) {
           {/* Contact */}
           <div className="bg-[#f5f1e8] border border-[#e8e3d8] p-4 mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#c8893f] text-white flex items-center justify-center font-mono text-[13px] font-semibold shrink-0">
+              <div className="w-10 h-10 bg-[#7a9b76] text-white flex items-center justify-center font-mono text-[13px] font-semibold shrink-0">
                 {grower.owner.split(' ').map(n => n[0]).join('')}
               </div>
               <div className="flex-1 min-w-0">
@@ -1371,6 +1612,27 @@ function GrowersView({ user, onSelectGrower }) {
 
   const totalAcres = GROWERS.reduce((sum, g) => sum + g.totalAcres, 0);
 
+  const handleExportCSV = () => {
+    const rows = GROWERS.map(g => {
+      const fields = Object.values(SAMPLE_FIELDS).filter(f => f.growerId === g.id);
+      const fieldNames = fields.map(f => f.name).join('; ');
+      const criticalFields = fields.filter(f => f.pathogens.some(p => p.pct >= 70)).length;
+      return {
+        'Grower Name': g.name,
+        'Owner': g.owner,
+        'Phone': g.phone,
+        'Email': g.email,
+        'Relationship (Years)': g.relationship,
+        'Total Acres': g.totalAcres,
+        'Fields Analyzed': fields.length,
+        'Critical Fields': criticalFields,
+        'Field Names': fieldNames,
+      };
+    });
+    const today = new Date().toISOString().split('T')[0];
+    downloadCSV(`TraceAdvisor_Growers_${today}.csv`, rows);
+  };
+
   return (
     <main className="max-w-[1440px] mx-auto px-8 py-10">
       <section className="mb-8 flex items-end justify-between flex-wrap gap-4">
@@ -1383,7 +1645,10 @@ function GrowersView({ user, onSelectGrower }) {
           </h1>
           <p className="text-[14px] text-[#4a4840]">Contact list of all your clients · click any row to view their fields</p>
         </div>
-        <button className="text-[10px] tracking-[0.15em] uppercase font-semibold bg-[#2b2a26] text-[#faf7f0] px-4 py-2.5 hover:bg-[#4a4840] transition-colors flex items-center gap-2">
+        <button
+          onClick={handleExportCSV}
+          className="text-[10px] tracking-[0.15em] uppercase font-semibold bg-[#2b2a26] text-[#faf7f0] px-4 py-2.5 hover:bg-[#4a4840] transition-colors flex items-center gap-2"
+        >
           <Download className="w-3 h-3" strokeWidth={1.5} /> Export CSV
         </button>
       </section>
@@ -1449,6 +1714,143 @@ const LIBRARY_DOCS = [
   { fieldId: 'bakerRidge', status: 'signed', generatedOn: 'Mar 11, 2026', signedOn: 'Mar 13', signedBy: 'Tom Baker' },
 ];
 
+// =====================================================================
+// MOCK NOTIFICATIONS
+// =====================================================================
+
+const MOCK_NOTIFICATIONS = [
+  {
+    id: 'n1',
+    type: 'signed',
+    title: 'Sean O\'Connell signed the O\'Connell North field plan',
+    body: 'SCN-resistant variety switch approved. $11,550 opportunity committed.',
+    time: '2 hours ago',
+    unread: true,
+  },
+  {
+    id: 'n2',
+    type: 'alert',
+    title: 'Critical pathogen threshold crossed — Wright West 80',
+    body: 'SCN pressure moved from 82nd to 91st percentile in latest sample.',
+    time: '5 hours ago',
+    unread: true,
+  },
+  {
+    id: 'n3',
+    type: 'portfolio',
+    title: 'Portfolio opportunity updated for Spring 2026',
+    body: 'Total uplift now $94K across 12 analyzed fields (+$12K from last week).',
+    time: 'Yesterday',
+    unread: true,
+  },
+  {
+    id: 'n4',
+    type: 'signed',
+    title: 'Bill Henderson signed the North 40 field plan',
+    body: 'Seed treatment + soil amendment approved for 80 acres.',
+    time: '2 days ago',
+    unread: false,
+  },
+  {
+    id: 'n5',
+    type: 'reminder',
+    title: 'Follow-up with Tran Agriculture',
+    body: 'Tran South 40 plan was downloaded 6 days ago — not yet signed.',
+    time: '3 days ago',
+    unread: false,
+  },
+];
+
+// =====================================================================
+// MOCK AI SEARCH RESULTS — keyed by loose intent matching
+// =====================================================================
+
+const AI_SEARCH_SUGGESTIONS = [
+  'Show me all fields with SCN above 70th percentile',
+  'Which grower has the highest opportunity this season?',
+  'Summarize Henderson Farms',
+  'What fields need attention this week?',
+  'Signed documents from the last 7 days',
+];
+
+function generateAISearchResult(query) {
+  const q = query.toLowerCase();
+
+  if (q.includes('scn') || q.includes('cyst') || q.includes('70th') || q.includes('high pressure')) {
+    return {
+      answer: 'Four fields currently show Soybean Cyst Nematode pressure at or above the 70th percentile: Wright West 80 (91st), Baker Ridge (74th), North 40 (85th), and South Pivot (62nd — just below threshold but trending). Wright West 80 climbed 43 points since 2023 — it\'s your fastest-escalating field and the highest-priority conversation this week.',
+      sources: ['Wright West 80', 'Baker Ridge', 'North 40'],
+      suggestions: ['Draft outreach to Diane Wright', 'Compare SCN trends across all soybean fields'],
+    };
+  }
+  if (q.includes('highest') || q.includes('opportunity') || q.includes('ranked') || q.includes('top grower')) {
+    return {
+      answer: 'Baker Family Ranch leads your book this season at $25.2K total uplift, driven entirely by Baker Ridge (SCN-resistant variety switch + seed treatment on 240 acres). Johanssen Farms is second at $18.9K from corn rootworm trait rotation on Johanssen Upper. Together, these two accounts represent 47% of your total portfolio opportunity.',
+      sources: ['Baker Family Ranch', 'Johanssen Farms', 'Henderson Farms'],
+      suggestions: ['Prioritize Baker Family Ranch for this week', 'Draft a portfolio summary for leadership'],
+    };
+  }
+  if (q.includes('henderson')) {
+    return {
+      answer: 'Henderson Farms has 3 fields analyzed this season across 840 acres: North 40 (80 ac soybean, 2 critical pathogens), River Bottom (120 ac corn, elevated Pythium), and Home Quarter (160 ac corn, all clean). North 40 is the priority — SCN at 85th percentile and SDS at 72nd. Bill Henderson has signed the North 40 plan but River Bottom is still downloaded-only. Estimated combined uplift: $15.2K.',
+      sources: ['North 40', 'River Bottom', 'Home Quarter'],
+      suggestions: ['Follow up on River Bottom signature', 'Pull Henderson\'s 3-year trend'],
+    };
+  }
+  if (q.includes('attention') || q.includes('this week') || q.includes('triage') || q.includes('urgent')) {
+    return {
+      answer: 'Six fields have at least one pathogen ≥70th percentile: Wright West 80 (peak 91), Johanssen Upper (88), North 40 (85), O\'Connell North (82), East Creek (78), and Baker Ridge (74). Of those, Wright West 80 and Johanssen Upper have the sharpest recent escalation — I\'d call Diane Wright and Erik Johanssen first. The other four can wait until late this week.',
+      sources: ['Triage Queue · 6 fields'],
+      suggestions: ['Start a call list for this week', 'Draft texts to Diane and Erik'],
+    };
+  }
+  if (q.includes('signed') || q.includes('document') || q.includes('library') || q.includes('7 days') || q.includes('last week')) {
+    return {
+      answer: 'Six field plans have been signed this season: O\'Connell North (Sean O\'Connell, Mar 20), North 40 (Bill Henderson, Mar 18), East Creek (Carlos Martinez, Mar 19), Johanssen Upper (Erik Johanssen, Mar 17), Wright West 80 (Diane Wright, Mar 15), and Baker Ridge (Tom Baker, Mar 13). Three plans are downloaded but not yet signed: River Bottom, Wright East 160, and Patel Main 200 — worth a follow-up.',
+      sources: ['Library · 9 documents'],
+      suggestions: ['Send reminder to unsigned growers', 'Export signed-documents list'],
+    };
+  }
+
+  // Default fallback
+  return {
+    answer: `I searched across your portfolio for "${query}" and found several relevant matches. Try one of the suggested queries below for a more targeted answer, or rephrase with a specific field, grower, or pathogen.`,
+    sources: [],
+    suggestions: AI_SEARCH_SUGGESTIONS.slice(0, 3),
+  };
+}
+
+// =====================================================================
+// CSV EXPORT HELPERS
+// =====================================================================
+
+function downloadCSV(filename, rows) {
+  if (!rows || rows.length === 0) return;
+  const headers = Object.keys(rows[0]);
+  const escape = (v) => {
+    if (v === null || v === undefined) return '';
+    const s = String(v);
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  };
+  const csv = [
+    headers.join(','),
+    ...rows.map(row => headers.map(h => escape(row[h])).join(',')),
+  ].join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function LibraryView({ onOpenLibraryDoc }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -1487,7 +1889,30 @@ function LibraryView({ onOpenLibraryDoc }) {
           </h1>
           <p className="text-[14px] text-[#4a4840]">All signed and downloaded field plan PDFs · click any row to re-open</p>
         </div>
-        <button className="text-[10px] tracking-[0.15em] uppercase font-semibold bg-[#2b2a26] text-[#faf7f0] px-4 py-2.5 hover:bg-[#4a4840] transition-colors flex items-center gap-2">
+        <button
+          onClick={() => {
+            const rows = LIBRARY_DOCS.map(d => {
+              const field = SAMPLE_FIELDS[d.fieldId];
+              const grower = GROWERS.find(g => g.id === field.growerId);
+              const filename = `${grower.name.replace(/\s+/g, '_').replace(/[^\w]/g, '')}_${field.name.replace(/\s+/g, '_')}_2026_Plan.pdf`;
+              return {
+                'Document': field.name,
+                'Filename': filename,
+                'Grower': grower.name,
+                'Owner': grower.owner,
+                'Generated On': d.generatedOn,
+                'Status': d.status === 'signed' ? 'Signed' : 'Downloaded',
+                'Signed By': d.signedBy || '—',
+                'Signed On': d.signedOn || '—',
+                'Acres': field.acres,
+                'Crop': field.crop,
+              };
+            });
+            const today = new Date().toISOString().split('T')[0];
+            downloadCSV(`TraceAdvisor_Library_${today}.csv`, rows);
+          }}
+          className="text-[10px] tracking-[0.15em] uppercase font-semibold bg-[#2b2a26] text-[#faf7f0] px-4 py-2.5 hover:bg-[#4a4840] transition-colors flex items-center gap-2"
+        >
           <Download className="w-3 h-3" strokeWidth={1.5} /> Export list
         </button>
       </section>
@@ -1652,7 +2077,7 @@ function FieldDetailView({ user, selectedFieldId, onChangeField, onBack, autoOpe
           {grower.name} · Field Detail
         </div>
         <h1 className="font-serif text-[44px] md:text-[52px] leading-[0.95] text-[#2b2a26] tracking-tight mb-3">
-          Hello, <em className="text-[#c8893f] not-italic" style={{ fontStyle: 'italic' }}>{user.firstName}</em>.
+          Hello, <em className="text-[#7a9b76] not-italic" style={{ fontStyle: 'italic' }}>{user.firstName}</em>.
         </h1>
         <p className="text-[15px] text-[#4a4840] leading-relaxed">
           Reviewing <span className="font-semibold text-[#2b2a26]">{field.name}</span> with {grower.owner}. Select fields below to switch; pick recommendations to include in the grower 1-pager.
@@ -1685,13 +2110,13 @@ function FieldDetailView({ user, selectedFieldId, onChangeField, onBack, autoOpe
                     <div className="font-serif text-[18px] tracking-tight truncate">{f.name}</div>
                     {criticalCount > 0 && (
                       <div className={`text-[8px] font-bold tracking-[0.15em] px-1.5 py-0.5 shrink-0 ml-2 ${
-                        isActive ? 'bg-[#c8893f] text-[#2b2a26]' : 'bg-[#b8442f] text-white'
+                        isActive ? 'bg-[#7a9b76] text-[#2b2a26]' : 'bg-[#b8442f] text-white'
                       }`}>
                         {criticalCount} CRIT
                       </div>
                     )}
                   </div>
-                  <div className={`text-[10px] tracking-[0.05em] uppercase ${isActive ? 'text-[#c8893f]' : 'text-[#6b6758]'} truncate`}>
+                  <div className={`text-[10px] tracking-[0.05em] uppercase ${isActive ? 'text-[#7a9b76]' : 'text-[#6b6758]'} truncate`}>
                     {fGrower.name}
                   </div>
                   <div className={`text-[9px] font-mono mt-0.5 ${isActive ? 'text-[#e8e3d8]' : 'text-[#6b6758]'}`}>
@@ -1744,10 +2169,10 @@ function FieldDetailView({ user, selectedFieldId, onChangeField, onBack, autoOpe
             </div>
             <div className="p-5 border-t md:border-t-0 bg-[#2b2a26] text-[#faf7f0]">
               <div className="flex items-center gap-1.5 mb-2">
-                <TrendingUp className="w-3 h-3 text-[#c8893f]" strokeWidth={1.5} />
-                <span className="text-[9px] tracking-[0.15em] text-[#c8893f] font-semibold uppercase">Est. uplift</span>
+                <TrendingUp className="w-3 h-3 text-[#7a9b76]" strokeWidth={1.5} />
+                <span className="text-[9px] tracking-[0.15em] text-[#7a9b76] font-semibold uppercase">Est. uplift</span>
               </div>
-              <div className="font-mono text-2xl tabular-nums text-[#c8893f] font-medium">${totalUplift.toLocaleString()}</div>
+              <div className="font-mono text-2xl tabular-nums text-[#7a9b76] font-medium">${totalUplift.toLocaleString()}</div>
               <div className="text-[10px] text-[#e8e3d8] mt-0.5">across {field.acres} acres</div>
             </div>
           </section>
